@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Erick & Giovanna · Amor da minha vida</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800;14..32,900&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: #121212;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 430px;
+      margin: 0 auto;
+      height: 100vh;
+      max-height: 100vh;
+      background-color: rgb(18, 18, 18);
+      background-image: linear-gradient(rgb(78, 31, 147) 0%, rgb(78, 31, 147) 45%, rgb(54, 21, 102) 65%, rgb(18, 18, 18) 85%);
+      background-repeat: no-repeat;
+      background-attachment: scroll;
+      overflow-x: hidden;
+      overflow-y: auto;
+      position: relative;
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05);
+    }
+
+    .app-container::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .app-container::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+    }
+
+    .app-container::-webkit-scrollbar-thumb {
+      background: rgba(242, 249, 254, 0.4);
+      border-radius: 10px;
+    }
+
+    /* iframe oculto do YouTube - completamente invisível */
+    #main-player-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .inner-flex {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      height: 100%;
+      gap: 20px;
+      padding: 0 16px 32px 16px;
+    }
+
+    .sticky-header {
+      display: flex;
+      width: 100%;
+      align-items: center;
+      justify-content: space-between;
+      height: fit-content;
+      padding-top: 12px;
+      background: transparent;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .song-title-header {
+      font-weight: 600;
+      font-size: 16px;
+      color: #F2F9FE;
+      text-align: center;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      max-width: 180px;
+    }
+
+    .icon-click {
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .icon-click:active {
+      opacity: 0.7;
+    }
+
+    .cover-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      margin: 4px 0 8px 0;
+    }
+
+    .capa-card {
+      position: relative;
+      width: 100%;
+      max-width: 360px;
+      aspect-ratio: 1 / 1;
+      border-radius: 18px;
+      box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.5);
+      overflow: hidden;
+      background: #2a1a44;
+      cursor: pointer;
+    }
+
+    .capa-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .play-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+
+    .capa-card:hover .play-overlay {
+      opacity: 1;
+    }
+
+    .play-overlay svg {
+      width: 60px;
+      height: 60px;
+      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.5));
+    }
+
+    .visceral-title {
+      font-weight: 800;
+      font-size: 26px;
+      color: #F2F9FE;
+      letter-spacing: -0.3px;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    .marquee {
+      display: inline-block;
+      padding-right: 30px;
+      animation: scrollText 13s ease-in-out infinite;
+    }
+
+    @keyframes scrollText {
+      0% { transform: translateX(0); }
+      15% { transform: translateX(0); }
+      45% { transform: translateX(-220px); }
+      75% { transform: translateX(-220px); }
+      100% { transform: translateX(0); }
+    }
+
+    .artist-name {
+      font-size: 15px;
+      font-weight: 500;
+      color: rgba(242, 249, 254, 0.85);
+      margin-top: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .check-badge {
+      width: 35px;
+      height: 35px;
+      background: #F2F9FE;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .progress-section {
+      margin-top: 20px;
+    }
+
+    .progress-bar-bg {
+      height: 4px;
+      background: rgba(242, 249, 254, 0.25);
+      border-radius: 8px;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .progress-fill {
+      width: 0%;
+      background: #F2F9FE;
+      height: 100%;
+      border-radius: 8px;
+      position: relative;
+      transition: width 0.1s linear;
+    }
+
+    .progress-knob {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      background: #F2F9FE;
+      border-radius: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      left: 0%;
+      box-shadow: 0 0 0 3px rgba(242, 249, 254, 0.3);
+      transition: left 0.1s linear;
+    }
+
+    .player-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 20px 0 12px 0;
+    }
+
+    .central-buttons {
+      display: flex;
+      gap: 32px;
+      align-items: center;
+    }
+
+    .play-circle {
+      background: #F2F9FE;
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.1s ease, background 0.2s;
+    }
+
+    .play-circle:active { transform: scale(0.96); }
+    .play-circle.playing { background: #c084fc; }
+
+    .glass-card {
+      background: #332f2f;
+      border-radius: 24px;
+      width: 100%;
+    }
+
+    .img-bg-cover {
+      position: relative;
+      width: 100%;
+      height: 260px;
+      background: #2a2740;
+      overflow: hidden;
+      border-top-left-radius: 24px;
+      border-top-right-radius: 24px;
+    }
+
+    .img-bg-cover img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .overlay-dark {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.25);
+    }
+
+    .counter-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .counter-item {
+      background: #26211f;
+      border-radius: 18px;
+      padding: 12px 5px;
+      text-align: center;
+      border-bottom: 4px solid rgba(0, 0, 0, 0.3);
+    }
+
+    .counter-number {
+      font-size: 26px;
+      font-weight: 800;
+      color: #F2F9FE;
+      line-height: 1.2;
+    }
+
+    .counter-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: #e6e1e5;
+      text-transform: lowercase;
+    }
+
+    .message-card {
+      background: rgb(154, 108, 224);
+      border-radius: 24px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .message-preview {
+      position: relative;
+      max-height: 150px;
+      overflow: hidden;
+    }
+
+    .message-preview p {
+      color: #000000;
+      font-weight: 800;
+      font-size: 23px;
+      line-height: 1.4;
+      word-break: break-word;
+      white-space: pre-wrap;
+    }
+
+    .gradient-mask {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 90px;
+      pointer-events: none;
+    }
+
+    .btn-mostrar {
+      background: #F2F9FE;
+      border: none;
+      border-radius: 60px;
+      padding: 12px 20px;
+      font-weight: 700;
+      font-size: 14px;
+      color: #1e1a2f;
+      width: fit-content;
+      cursor: pointer;
+    }
+
+    .conquistas-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .badge-icon {
+      background: #141414;
+      border-radius: 18px;
+      aspect-ratio: 1 / 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at 30% 30%, rgba(255, 215, 0, 0.08), #121212);
+    }
+
+    .wrapped-banner {
+      background: #010101;
+      border-radius: 24px;
+      padding: 14px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.2s, opacity 0.2s;
+    }
+
+    .wrapped-banner:active {
+      transform: scale(0.98);
+      opacity: 0.9;
+    }
+
+    .wrapped-banner img {
+      width: 100%;
+      border-radius: 20px;
+      pointer-events: none;
+    }
+
+    /* Timeline Modal */
+    .timeline-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      max-width: 430px;
+      margin: 0 auto;
+      background: #0a0a0a;
+      z-index: 300;
+      display: flex;
+      flex-direction: column;
+      transform: translateY(100%);
+      transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      overflow-y: auto;
+    }
+
+    .timeline-modal.open {
+      transform: translateY(0);
+    }
+
+    .timeline-header {
+      position: sticky;
+      top: 0;
+      background: #0a0a0a;
+      padding: 20px 20px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      z-index: 10;
+    }
+
+    .timeline-header h2 {
+      font-size: 20px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #F2F9FE, #c084fc);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .close-timeline {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 30px;
+      padding: 8px;
+      display: flex;
+      cursor: pointer;
+    }
+
+    .timeline-container {
+      padding: 20px 20px 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    .timeline-item {
+      display: flex;
+      gap: 16px;
+      position: relative;
+    }
+
+    .timeline-item.left {
+      flex-direction: row;
+    }
+
+    .timeline-item.right {
+      flex-direction: row-reverse;
+    }
+
+    .timeline-icon {
+      flex-shrink: 0;
+      width: 48px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+
+    .timeline-dot {
+      width: 16px;
+      height: 16px;
+      background: #c084fc;
+      border-radius: 50%;
+      box-shadow: 0 0 0 4px rgba(192, 132, 252, 0.3);
+      margin-top: 16px;
+    }
+
+    .timeline-line {
+      position: absolute;
+      top: 32px;
+      bottom: -32px;
+      width: 2px;
+      background: linear-gradient(to bottom, #c084fc, #4e1f93);
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .timeline-item:last-child .timeline-line {
+      display: none;
+    }
+
+    .timeline-content {
+      flex: 1;
+      background: #1e1e2a;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .timeline-img {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      display: block;
+    }
+
+    .timeline-text {
+      padding: 16px;
+    }
+
+    .timeline-text h3 {
+      font-size: 18px;
+      font-weight: 800;
+      color: #F2F9FE;
+      margin-bottom: 6px;
+    }
+
+    .timeline-text .timeline-date {
+      font-size: 12px;
+      color: #c084fc;
+      font-weight: 600;
+      margin-bottom: 8px;
+      letter-spacing: 0.5px;
+    }
+
+    .timeline-text p {
+      font-size: 14px;
+      color: #d1d5db;
+      line-height: 1.4;
+    }
+
+    .modal-message {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      max-width: 430px;
+      margin: 0 auto;
+      background: linear-gradient(145deg, rgb(78, 31, 147) 0%, rgb(54, 21, 102) 70%, #121212 100%);
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      transform: translateY(100%);
+      transition: transform 0.45s cubic-bezier(0.2, 0.95, 0.4, 1);
+      padding: 28px 24px 40px 24px;
+      overflow-y: auto;
+    }
+
+    .modal-message.open {
+      transform: translateY(0);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 30px;
+      align-items: center;
+    }
+
+    .full-message-text {
+      font-size: 28px;
+      font-weight: 800;
+      line-height: 1.4;
+      color: #F2F9FE;
+      text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .close-modal {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 30px;
+      padding: 8px;
+      display: flex;
+      cursor: pointer;
+    }
+
+    .flex-between {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .mt-3 { margin-top: 12px; }
+    .op-75 { opacity: 0.75; }
+    .text-gold { color: #F2F9FE; }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- iframe do YouTube completamente oculto, SEM autoplay -->
+    <div id="main-player-hidden"></div>
+
+    <div class="inner-flex">
+      <div class="sticky-header">
+        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-click" style="color:#F2F9FE">
+          <path d="m6 9 6 6 6-6"></path>
+        </svg>
+        <div class="song-title-header">Amor da minha vida</div>
+        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-click" style="color:#F2F9FE">
+          <circle cx="12" cy="12" r="1"></circle>
+          <circle cx="19" cy="12" r="1"></circle>
+          <circle cx="5" cy="12" r="1"></circle>
+        </svg>
+      </div>
+
+      <div class="cover-wrapper">
+        <div class="capa-card" id="capaCard">
+          <img alt="Momento especial" decoding="async" src="https://media.lovepanda.com.br/temp/d5679e4d-f8e9-41fc-9021-963a9dd18e20-img-20251213-wa0004.jpg" onerror="this.src='https://placehold.co/600x600/4e1f93/white?text=✨+Nosso+momento'">
+          <div class="play-overlay">
+            <svg viewBox="0 0 24 24" fill="white">
+              <circle cx="12" cy="12" r="12" fill="rgba(0,0,0,0.6)"/>
+              <polygon points="10,7 10,17 18,12" fill="white"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex-between">
+        <div style="flex:1">
+          <div class="visceral-title">
+            <div class="overflow-hidden whitespace-nowrap">
+              <span class="marquee">VISCERAL - JOSÉ JR (visualizer)</span>
+            </div>
+          </div>
+          <div class="artist-name">José Jr</div>
+        </div>
+        <div class="check-badge">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4e1f93" stroke-width="4">
+            <path d="M20 6 9 17l-5-5"></path>
+          </svg>
+        </div>
+      </div>
+
+      <div class="progress-section">
+        <div class="progress-bar-bg" id="progressBarBg">
+          <div class="progress-fill" id="progressFill"></div>
+          <div class="progress-knob" id="progressKnob"></div>
+        </div>
+        <div class="flex-between mt-3">
+          <p class="text-gold op-75" style="font-size: 12px;" id="currentTime">0:00</p>
+          <p class="text-gold op-75" style="font-size: 12px;" id="totalDuration">-3:45</p>
+        </div>
+      </div>
+
+      <div class="player-controls">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-click" style="color:#F2F9FE">
+          <path d="m18 14 4 4-4 4"></path><path d="m18 2 4 4-4 4"></path><path d="M2 18h1.973a4 4 0 0 0 3.3-1.7l5.454-8.6a4 4 0 0 1 3.3-1.7H22"></path><path d="M2 6h1.972a4 4 0 0 1 3.6 2.2"></path><path d="M22 18h-6.041a4 4 0 0 1-3.3-1.8l-.359-.45"></path>
+        </svg>
+        <div class="central-buttons">
+          <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="currentColor" class="icon-click" style="color:#F2F9FE; opacity:0.55" id="prevBtn">
+            <path d="M17.971 4.285A2 2 0 0 1 21 6v12a2 2 0 0 1-3.029 1.715l-9.997-5.998a2 2 0 0 1-.003-3.432z" /><path d="M3 20V4" />
+          </svg>
+          <div class="play-circle" id="playPauseBtn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor" style="color:#4e1f93; margin-left: 3px;">
+              <polygon points="5 3 19 12 5 21 5 3" />
+            </svg>
+          </div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="currentColor" class="icon-click" style="color:#F2F9FE; opacity:0.55" id="nextBtn">
+            <path d="M21 4v16" /><path d="M6.029 4.285A2 2 0 0 0 3 6v12a2 2 0 0 0 3.029 1.715l9.997-5.998a2 2 0 0 0 .003-3.432z" />
+          </svg>
+        </div>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-click" style="color:#F2F9FE">
+          <path d="m17 2 4 4-4 4" /><path d="M3 11v-1a4 4 0 0 1 4-4h14" /><path d="m7 22-4-4 4-4" /><path d="M21 13v1a4 4 0 0 1-4 4H3" />
+        </svg>
+      </div>
+
+      <div class="glass-card">
+        <div class="img-bg-cover">
+          <img src="nossa-foto-2.jpg" alt="casal foto">
+          <div class="overlay-dark"></div>
+          <div style="position:absolute; bottom: 16px; left: 20px; z-index: 2;"><span class="text-gold" style="font-weight: 700; font-size: 18px;">Sobre o casal</span></div>
+        </div>
+        <div style="padding: 20px;">
+          <div class="flex-between"><div><h2 style="color:#F2F9FE; font-weight: 800; font-size: 26px;">Erick e Giovanna</h2><p style="color:#ABB0BC; font-weight: 500;">Juntos desde 2022</p></div></div>
+          <div class="counter-grid" id="counterGrid">
+            <div class="counter-item"><div class="counter-number" id="yearsCount">0</div><div class="counter-label">Anos</div></div>
+            <div class="counter-item"><div class="counter-number" id="monthsCount">0</div><div class="counter-label">Meses</div></div>
+            <div class="counter-item"><div class="counter-number" id="daysCount">0</div><div class="counter-label">Dias</div></div>
+            <div class="counter-item"><div class="counter-number" id="hoursCount">0</div><div class="counter-label">Horas</div></div>
+            <div class="counter-item"><div class="counter-number" id="minutesCount">0</div><div class="counter-label">Minutos</div></div>
+            <div class="counter-item"><div class="counter-number" id="secondsCount">0</div><div class="counter-label">Segundos</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="message-card">
+        <span style="color:#F2F9FE; font-weight: 800; font-size: 20px;">Mensagem especial</span>
+        <div class="message-preview"><p id="shortMsgPreview">Eu te amo meu amor, você é tudo para mim, mulher da minha vida, ansioso para ser seu esposo e passar todos os dias ao seu lado, sua companhia me faz feliz, a sua vida me anima, eu te amo de todo o meu coração, só de te ver meu coração já se alegra e o sorriso aparece no meu rosto, sou feliz de ter você comigo e saber que vamos viver juntos até o fim.</p><div class="gradient-mask"></div></div>
+        <button class="btn-mostrar" id="showFullMsgBtn">Mostrar Mensagem</button>
+      </div>
+
+      <div class="wrapped-banner" id="wrappedBannerTrigger">
+        <img src="https://media.lovepanda.com.br/static/br/images/sections/wrapped-banner.png" alt="Nossa história wrapped" style="width:100%;">
+      </div>
+    </div>
+  </div>
+
+  <!-- Timeline Modal -->
+  <div id="timelineModal" class="timeline-modal">
+    <div class="timeline-header">
+      <h2>Nossa Linha do Tempo</h2>
+      <div class="close-timeline" id="closeTimelineBtn">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </div>
+    </div>
+    <div class="timeline-container" id="timelineContainer"></div>
+  </div>
+
+  <div id="fullMessageModal" class="modal-message">
+    <div class="modal-header"><span style="font-weight: 600; color:#BFAFF2;">Erick & Giovanna</span><div class="close-modal" id="closeModalBtn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></div></div>
+    <div class="full-message-text">Eu te amo meu amor, você é tudo para mim, mulher da minha vida, ansioso para ser seu esposo e passar todos os dias ao seu lado, sua companhia me faz feliz, a sua vida me anima, eu te amo de todo o meu coração, só de te ver meu coração já se alegra e o sorriso aparece no meu rosto, sou feliz de ter você comigo e saber que vamos viver juntos até o fim.</div>
+  </div>
+
+  <script>
+    // ----- PLAYER SIMPLES E FUNCIONAL -----
+    let playerReady = false;
+    let ytPlayer = null;
+    let isPlaying = false;
+    let duration = 223;
+    let progressInterval = null;
+
+    const playPauseBtn = document.getElementById('playPauseBtn');
+    const playIconSvg = playPauseBtn.querySelector('svg');
+    const capaCard = document.getElementById('capaCard');
+
+    // Carregar API do YouTube
+    let tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    let firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+    window.onYouTubeIframeAPIReady = function () {
+      ytPlayer = new YT.Player('main-player-hidden', {
+        width: '1',
+        height: '1',
+
+        playerVars: {
+          autoplay: 0,
+          controls: 0,
+          rel: 0,
+          modestbranding: 1,
+          playsinline: 1
+        },
+
+        videoId: 'K9ogcdikIXY',
+
+        events: {
+          onReady: onPlayerReady,
+          onStateChange: onPlayerStateChange
+        }
+      });
+    };
+
+    function onPlayerReady() {
+      playerReady = true;
+
+      ytPlayer.setVolume(100);
+    }
+
+    function onPlayerStateChange(event) {
+      if (event.data == YT.PlayerState.PLAYING) {
+        isPlaying = true;
+        updatePlayButtonState(true);
+        startProgressUpdate();
+      } else if (event.data == YT.PlayerState.PAUSED) {
+        isPlaying = false;
+        updatePlayButtonState(false);
+        if (progressInterval) clearInterval(progressInterval);
+      } else if (event.data == YT.PlayerState.ENDED) {
+        isPlaying = false;
+        updatePlayButtonState(false);
+        document.getElementById('progressFill').style.width = '0%';
+        document.getElementById('progressKnob').style.left = '0%';
+        document.getElementById('currentTime').innerText = '0:00';
+        document.getElementById('totalDuration').innerText = `-${formatTime(duration)}`;
+        if (progressInterval) clearInterval(progressInterval);
+      }
+    }
+
+    function updatePlayButtonState(playing) {
+      if (playing) {
+        playPauseBtn.classList.add('playing');
+        // Ícone de PAUSE (dois retângulos)
+        playIconSvg.innerHTML = '<rect x="7" y="4" width="3" height="16" fill="currentColor"/><rect x="14" y="4" width="3" height="16" fill="currentColor"/>';
+        playIconSvg.style.marginLeft = '0';
+      } else {
+        playPauseBtn.classList.remove('playing');
+        // Ícone de PLAY (triângulo)
+        playIconSvg.innerHTML = '<polygon points="5 3 19 12 5 21 5 3" />';
+        playIconSvg.style.marginLeft = '3px';
+      }
+    }
+
+    function startProgressUpdate() {
+      if (progressInterval) clearInterval(progressInterval);
+      progressInterval = setInterval(() => {
+        if (ytPlayer && isPlaying && ytPlayer.getCurrentTime) {
+          const current = ytPlayer.getCurrentTime();
+          const dur = ytPlayer.getDuration();
+          if (dur && dur > 0) {
+            const percent = (current / dur) * 100;
+            document.getElementById('progressFill').style.width = `${percent}%`;
+            document.getElementById('progressKnob').style.left = `${percent}%`;
+            document.getElementById('currentTime').innerText = formatTime(current);
+            document.getElementById('totalDuration').innerText = `-${formatTime(dur - current)}`;
+          }
+        }
+      }, 500);
+    }
+
+    function formatTime(secs) {
+      if (isNaN(secs) || !isFinite(secs)) return "0:00";
+      const m = Math.floor(secs / 60);
+      const s = Math.floor(secs % 60);
+      return `${m}:${s.toString().padStart(2, '0')}`;
+    }
+
+    // Função toggle: toca se estiver pausado, pausa se estiver tocando
+    function togglePlayPause() {
+      if (!playerReady) return;
+
+      const state = ytPlayer.getPlayerState();
+
+      if (
+          state === YT.PlayerState.PLAYING ||
+          state === YT.PlayerState.BUFFERING
+      ) {
+          ytPlayer.pauseVideo();
+      } else {
+          ytPlayer.playVideo();
+      }
+    }
+
+
+
+    // Eventos de clique: botão play/pause e capa do álbum
+    playPauseBtn.addEventListener('click', togglePlayPause);
+    capaCard.addEventListener('click', togglePlayPause);
+
+    // Barra de progresso clicável
+    document.getElementById('progressBarBg').addEventListener('click', (e) => {
+      if (!ytPlayer || !playerReady) return;
+      const rect = e.currentTarget.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const percent = x / rect.width;
+      const seekTime = percent * duration;
+      ytPlayer.seekTo(seekTime, true);
+    });
+
+    // Botões next/prev (avançar/voltar 10 segundos)
+    document.getElementById('nextBtn').addEventListener('click', () => {
+      if (ytPlayer && playerReady) {
+        const current = ytPlayer.getCurrentTime();
+        ytPlayer.seekTo(Math.min(current + 10, duration), true);
+      }
+    });
+    document.getElementById('prevBtn').addEventListener('click', () => {
+      if (ytPlayer && playerReady) {
+        const current = ytPlayer.getCurrentTime();
+        ytPlayer.seekTo(Math.max(current - 10, 0), true);
+      }
+    });
+
+    // ----- CONTADOR DE TEMPO JUNTOS -----
+    function updateTimeTogether() {
+      const start = new Date(2022, 10, 13, 0, 0, 0);
+      const now = new Date();
+      let years = now.getFullYear() - start.getFullYear();
+      let months = now.getMonth() - start.getMonth();
+      let days = now.getDate() - start.getDate();
+      let hours = now.getHours() - start.getHours();
+      let minutes = now.getMinutes() - start.getMinutes();
+      let seconds = now.getSeconds() - start.getSeconds();
+      if (seconds < 0) { seconds += 60; minutes--; }
+      if (minutes < 0) { minutes += 60; hours--; }
+      if (hours < 0) { hours += 24; days--; }
+      if (days < 0) { let prevMonthDate = new Date(now.getFullYear(), now.getMonth(), 0); days += prevMonthDate.getDate(); months--; }
+      if (months < 0) { months += 12; years--; }
+      document.getElementById('yearsCount').innerText = years;
+      document.getElementById('monthsCount').innerText = months;
+      document.getElementById('daysCount').innerText = days;
+      document.getElementById('hoursCount').innerText = hours;
+      document.getElementById('minutesCount').innerText = minutes;
+      document.getElementById('secondsCount').innerText = seconds;
+    }
+    updateTimeTogether();
+    setInterval(updateTimeTogether, 1000);
+
+    // ----- MODAL MENSAGEM -----
+    const modalMsg = document.getElementById('fullMessageModal');
+    document.getElementById('showFullMsgBtn').addEventListener('click', () => { modalMsg.classList.add('open'); document.body.style.overflow = 'hidden'; });
+    document.getElementById('closeModalBtn').addEventListener('click', () => { modalMsg.classList.remove('open'); document.body.style.overflow = ''; });
+    modalMsg.addEventListener('click', (e) => { if (e.target === modalMsg) modalMsg.classList.remove('open'); });
+
+    // ----- TIMELINE -----
+    const timelineEvents = [
+      { year: 2022, month: "Novembro", day: 13, title: "💖 O início de tudo", desc: "Primeiro encontro e a conexão impossível de ignorar.", img: "https://images.unsplash.com/photo-1516589091380-5d8e87df6991?w=400&h=400&fit=crop", side: "left" },
+      { year: 2023, month: "Fevereiro", day: 14, title: "❤️ Primeiro Dia dos Namorados", desc: "Presentes, risadas e a certeza de que era pra sempre.", img: "https://images.unsplash.com/photo-1518199266791-5375a83190f1?w=400&h=400&fit=crop", side: "right" },
+      { year: 2023, month: "Julho", day: 10, title: "🌊 Viagem inesquecível", desc: "Praia, pôr do sol e promessas.", img: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400&h=400&fit=crop", side: "left" },
+      { year: 2024, month: "Janeiro", day: 1, title: "✨ Réveillon juntos", desc: "Viramos o ano celebrando o amor.", img: "https://images.unsplash.com/photo-1467810563316-b5476525c0f3?w=400&h=400&fit=crop", side: "right" },
+      { year: 2024, month: "Maio", day: 20, title: "🏡 Primeiro lar", desc: "Nosso primeiro apartamento.", img: "https://images.unsplash.com/photo-1560185009-a6a5eb09c24e?w=400&h=400&fit=crop", side: "left" },
+      { year: 2024, month: "Dezembro", day: 25, title: "🎄 Natal em família", desc: "União e sorrisos genuínos.", img: "https://images.unsplash.com/photo-1482517967863-00e15c9b44be?w=400&h=400&fit=crop", side: "right" },
+      { year: 2025, month: "Março", day: 10, title: "💍 Pedido de casamento", desc: "O momento mais especial.", img: "https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=400&h=400&fit=crop", side: "left" },
+      { year: 2026, month: "Junho", day: 12, title: "🥂 Hoje: nosso amor segue forte", desc: "Dia dos Namorados – celebrando cada segundo.", img: "https://media.lovepanda.com.br/temp/d5679e4d-f8e9-41fc-9021-963a9dd18e20-img-20251213-wa0004.jpg", side: "right" }
+    ];
+
+    function buildTimeline() {
+      const container = document.getElementById('timelineContainer');
+      container.innerHTML = '';
+      timelineEvents.forEach((ev) => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = `timeline-item ${ev.side}`;
+        const dateStr = `${ev.day} de ${ev.month} · ${ev.year}`;
+        itemDiv.innerHTML = `
+          <div class="timeline-icon"><div class="timeline-dot"></div><div class="timeline-line"></div></div>
+          <div class="timeline-content"><img class="timeline-img" src="${ev.img}" onerror="this.src='https://placehold.co/400x400/332f2f/white?text=📸'"><div class="timeline-text"><h3>${ev.title}</h3><div class="timeline-date">${dateStr}</div><p>${ev.desc}</p></div></div>
+        `;
+        container.appendChild(itemDiv);
+      });
+    }
+
+    const timelineModal = document.getElementById('timelineModal');
+    const wrappedBtn = document.getElementById('wrappedBannerTrigger');
+    const closeTimeline = document.getElementById('closeTimelineBtn');
+    wrappedBtn.addEventListener('click', () => { buildTimeline(); timelineModal.classList.add('open'); document.body.style.overflow = 'hidden'; });
+    closeTimeline.addEventListener('click', () => { timelineModal.classList.remove('open'); document.body.style.overflow = ''; });
+    timelineModal.addEventListener('click', (e) => { if (e.target === timelineModal) { timelineModal.classList.remove('open'); document.body.style.overflow = ''; } });
+  </script>
+</body>
+</html>
