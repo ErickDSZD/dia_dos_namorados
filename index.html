@@ -401,7 +401,7 @@
       pointer-events: none;
     }
 
-    /* Timeline Modal */
+    /* ================= NOVO ESTILO DA TIMELINE CENTRALIZADA ================= */
     .timeline-modal {
       position: fixed;
       top: 0;
@@ -452,72 +452,74 @@
       cursor: pointer;
     }
 
+    /* Container principal da timeline - centralizador */
     .timeline-container {
-      padding: 20px 20px 40px;
+      padding: 20px 16px 40px 16px;
       display: flex;
       flex-direction: column;
-      gap: 32px;
-    }
-
-    .timeline-item {
-      display: flex;
-      gap: 16px;
+      gap: 0px;
       position: relative;
     }
 
+    /* Linha vertical central (conecta todos os itens) */
+    .timeline-container::before {
+      content: '';
+      position: absolute;
+      top: 40px;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 3px;
+      background: linear-gradient(to bottom, #c084fc, #4e1f93, #c084fc);
+      border-radius: 3px;
+      z-index: 1;
+      box-shadow: 0 0 6px rgba(192, 132, 252, 0.5);
+    }
+
+    /* Cada item da timeline */
+    .timeline-item {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      width: 100%;
+      position: relative;
+      z-index: 2;
+      margin-bottom: 32px;
+    }
+
+    /* Espaçamento lateral para os cards */
     .timeline-item.left {
-      flex-direction: row;
+      justify-content: flex-start;
     }
 
     .timeline-item.right {
-      flex-direction: row-reverse;
+      justify-content: flex-end;
     }
 
-    .timeline-icon {
-      flex-shrink: 0;
-      width: 48px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      position: relative;
-    }
-
-    .timeline-dot {
-      width: 16px;
-      height: 16px;
-      background: #c084fc;
-      border-radius: 50%;
-      box-shadow: 0 0 0 4px rgba(192, 132, 252, 0.3);
-      margin-top: 16px;
-    }
-
-    .timeline-line {
-      position: absolute;
-      top: 32px;
-      bottom: -32px;
-      width: 2px;
-      background: linear-gradient(to bottom, #c084fc, #4e1f93);
-      left: 50%;
-      transform: translateX(-50%);
-    }
-
-    .timeline-item:last-child .timeline-line {
-      display: none;
-    }
-
+    /* Card de conteúdo - ambos os lados têm largura proporcional */
     .timeline-content {
-      flex: 1;
-      background: #1e1e2a;
-      border-radius: 24px;
+      width: calc(50% - 20px);
+      background: #ffffff;
       overflow: hidden;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+      transition: transform 0.2s, box-shadow 0.2s;
+      position: relative;
+      backdrop-filter: blur(2px);
+    }
+
+    .timeline-content:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 18px 30px rgba(0, 0, 0, 0.4);
+      border-color: rgba(192, 132, 252, 0.5);
     }
 
     .timeline-img {
-      width: 100%;
+      width: 95%;
       aspect-ratio: 1 / 1;
       object-fit: cover;
-      display: block;
+      display: flex;
+      justify-self: center;
+      align-self: center;
     }
 
     .timeline-text {
@@ -527,8 +529,9 @@
     .timeline-text h3 {
       font-size: 18px;
       font-weight: 800;
-      color: #F2F9FE;
+      color: #121212;
       margin-bottom: 6px;
+      letter-spacing: -0.3px;
     }
 
     .timeline-text .timeline-date {
@@ -541,10 +544,68 @@
 
     .timeline-text p {
       font-size: 14px;
-      color: #d1d5db;
-      line-height: 1.4;
+      color: #727375;
+      line-height: 1.45;
     }
 
+    /* Ajustes de responsividade para telas pequenas */
+    @media (max-width: 460px) {
+      .timeline-content {
+        width: calc(50% - 12px);
+      }
+      .timeline-text h3 {
+        font-size: 16px;
+      }
+      .timeline-text p {
+        font-size: 12px;
+      }
+      .timeline-text {
+        padding: 12px;
+      }
+    }
+
+    /* Quando o item é left (esquerda): card fica à esquerda da linha */
+    .timeline-item.left .timeline-content {
+      margin-right: auto;
+      margin-left: 0;
+      /* border-top-right-radius: 28px; */
+      /* border-bottom-right-radius: 28px; */
+    }
+
+    /* Quando o item é right (direita): card fica à direita da linha */
+    .timeline-item.right .timeline-content {
+      margin-left: auto;
+      margin-right: 0;
+      /* border-top-left-radius: 28px; */
+      /* border-bottom-left-radius: 28px; */
+    }
+
+    /* Pequena seta ou triângulo para dar sensação de conexão (opcional) */
+    .timeline-item.left .timeline-content::before {
+      content: '';
+      position: absolute;
+      left: -8px;
+      top: 28px;
+      width: 0;
+      height: 0;
+      border-top: 8px solid transparent;
+      border-bottom: 8px solid transparent;
+      border-right: 8px solid #1e1e2a;
+    }
+
+    .timeline-item.right .timeline-content::before {
+      content: '';
+      position: absolute;
+      right: -8px;
+      top: 28px;
+      width: 0;
+      height: 0;
+      border-top: 8px solid transparent;
+      border-bottom: 8px solid transparent;
+      border-left: 8px solid #1e1e2a;
+    }
+
+    /* Modal mensagem igual ao original */
     .modal-message {
       position: fixed;
       top: 0;
@@ -603,7 +664,6 @@
 </head>
 <body>
   <div class="app-container">
-    <!-- iframe do YouTube completamente oculto, SEM autoplay -->
     <div id="main-player-hidden"></div>
 
     <div class="inner-flex">
@@ -621,7 +681,7 @@
 
       <div class="cover-wrapper">
         <div class="capa-card" id="capaCard">
-          <img alt="Momento especial" decoding="async" src="https://media.lovepanda.com.br/temp/d5679e4d-f8e9-41fc-9021-963a9dd18e20-img-20251213-wa0004.jpg" onerror="this.src='https://placehold.co/600x600/4e1f93/white?text=✨+Nosso+momento'">
+          <img alt="Momento especial" decoding="async" src="https://media.lovepanda.com.br/temp/d5679e4d-f8e9-41fc-9021-963a9dd18e20-img-20251213-wa0004.jpg">
           <div class="play-overlay">
             <svg viewBox="0 0 24 24" fill="white">
               <circle cx="12" cy="12" r="12" fill="rgba(0,0,0,0.6)"/>
@@ -654,7 +714,7 @@
         </div>
         <div class="flex-between mt-3">
           <p class="text-gold op-75" style="font-size: 12px;" id="currentTime">0:00</p>
-          <p class="text-gold op-75" style="font-size: 12px;" id="totalDuration">-3:45</p>
+          <p class="text-gold op-75" style="font-size: 12px;" id="totalDuration">-7:15</p>
         </div>
       </div>
 
@@ -711,7 +771,7 @@
     </div>
   </div>
 
-  <!-- Timeline Modal -->
+  <!-- Timeline Modal Centralizada -->
   <div id="timelineModal" class="timeline-modal">
     <div class="timeline-header">
       <h2>Nossa Linha do Tempo</h2>
@@ -728,7 +788,7 @@
   </div>
 
   <script>
-    // ----- PLAYER SIMPLES E FUNCIONAL -----
+    // ----- PLAYER -----
     let playerReady = false;
     let ytPlayer = null;
     let isPlaying = false;
@@ -739,7 +799,6 @@
     const playIconSvg = playPauseBtn.querySelector('svg');
     const capaCard = document.getElementById('capaCard');
 
-    // Carregar API do YouTube
     let tag = document.createElement('script');
     tag.src = "https://www.youtube.com/iframe_api";
     let firstScriptTag = document.getElementsByTagName('script')[0];
@@ -747,64 +806,23 @@
 
     window.onYouTubeIframeAPIReady = function () {
       ytPlayer = new YT.Player('main-player-hidden', {
-        width: '1',
-        height: '1',
-
-        playerVars: {
-          autoplay: 0,
-          controls: 0,
-          rel: 0,
-          modestbranding: 1,
-          playsinline: 1
-        },
-
+        width: '1', height: '1',
+        playerVars: { autoplay: 0, controls: 0, rel: 0, modestbranding: 1, playsinline: 1 },
         videoId: 'K9ogcdikIXY',
-
-        events: {
-          onReady: onPlayerReady,
-          onStateChange: onPlayerStateChange
-        }
+        events: { onReady: onPlayerReady, onStateChange: onPlayerStateChange }
       });
     };
 
-    function onPlayerReady() {
-      playerReady = true;
-
-      ytPlayer.setVolume(100);
-    }
-
+    function onPlayerReady() { playerReady = true; ytPlayer.setVolume(100); }
     function onPlayerStateChange(event) {
-      if (event.data == YT.PlayerState.PLAYING) {
-        isPlaying = true;
-        updatePlayButtonState(true);
-        startProgressUpdate();
-      } else if (event.data == YT.PlayerState.PAUSED) {
-        isPlaying = false;
-        updatePlayButtonState(false);
-        if (progressInterval) clearInterval(progressInterval);
-      } else if (event.data == YT.PlayerState.ENDED) {
-        isPlaying = false;
-        updatePlayButtonState(false);
-        document.getElementById('progressFill').style.width = '0%';
-        document.getElementById('progressKnob').style.left = '0%';
-        document.getElementById('currentTime').innerText = '0:00';
-        document.getElementById('totalDuration').innerText = `-${formatTime(duration)}`;
-        if (progressInterval) clearInterval(progressInterval);
-      }
+      if (event.data == YT.PlayerState.PLAYING) { isPlaying = true; updatePlayButtonState(true); startProgressUpdate(); }
+      else if (event.data == YT.PlayerState.PAUSED) { isPlaying = false; updatePlayButtonState(false); if (progressInterval) clearInterval(progressInterval); }
+      else if (event.data == YT.PlayerState.ENDED) { isPlaying = false; updatePlayButtonState(false); document.getElementById('progressFill').style.width = '0%'; document.getElementById('progressKnob').style.left = '0%'; document.getElementById('currentTime').innerText = '0:00'; document.getElementById('totalDuration').innerText = `-${formatTime(duration)}`; if (progressInterval) clearInterval(progressInterval); }
     }
 
     function updatePlayButtonState(playing) {
-      if (playing) {
-        playPauseBtn.classList.add('playing');
-        // Ícone de PAUSE (dois retângulos)
-        playIconSvg.innerHTML = '<rect x="7" y="4" width="3" height="16" fill="currentColor"/><rect x="14" y="4" width="3" height="16" fill="currentColor"/>';
-        playIconSvg.style.marginLeft = '0';
-      } else {
-        playPauseBtn.classList.remove('playing');
-        // Ícone de PLAY (triângulo)
-        playIconSvg.innerHTML = '<polygon points="5 3 19 12 5 21 5 3" />';
-        playIconSvg.style.marginLeft = '3px';
-      }
+      if (playing) { playPauseBtn.classList.add('playing'); playIconSvg.innerHTML = '<rect x="7" y="4" width="3" height="16" fill="currentColor"/><rect x="14" y="4" width="3" height="16" fill="currentColor"/>'; playIconSvg.style.marginLeft = '0'; }
+      else { playPauseBtn.classList.remove('playing'); playIconSvg.innerHTML = '<polygon points="5 3 19 12 5 21 5 3" />'; playIconSvg.style.marginLeft = '3px'; }
     }
 
     function startProgressUpdate() {
@@ -813,123 +831,68 @@
         if (ytPlayer && isPlaying && ytPlayer.getCurrentTime) {
           const current = ytPlayer.getCurrentTime();
           const dur = ytPlayer.getDuration();
-          if (dur && dur > 0) {
-            const percent = (current / dur) * 100;
-            document.getElementById('progressFill').style.width = `${percent}%`;
-            document.getElementById('progressKnob').style.left = `${percent}%`;
-            document.getElementById('currentTime').innerText = formatTime(current);
-            document.getElementById('totalDuration').innerText = `-${formatTime(dur - current)}`;
-          }
+          if (dur && dur > 0) { const percent = (current / dur) * 100; document.getElementById('progressFill').style.width = `${percent}%`; document.getElementById('progressKnob').style.left = `${percent}%`; document.getElementById('currentTime').innerText = formatTime(current); document.getElementById('totalDuration').innerText = `-${formatTime(dur - current)}`; }
         }
       }, 500);
     }
 
-    function formatTime(secs) {
-      if (isNaN(secs) || !isFinite(secs)) return "0:00";
-      const m = Math.floor(secs / 60);
-      const s = Math.floor(secs % 60);
-      return `${m}:${s.toString().padStart(2, '0')}`;
-    }
-
-    // Função toggle: toca se estiver pausado, pausa se estiver tocando
-    function togglePlayPause() {
-      if (!playerReady) return;
-
-      const state = ytPlayer.getPlayerState();
-
-      if (
-          state === YT.PlayerState.PLAYING ||
-          state === YT.PlayerState.BUFFERING
-      ) {
-          ytPlayer.pauseVideo();
-      } else {
-          ytPlayer.playVideo();
-      }
-    }
-
-
-
-    // Eventos de clique: botão play/pause e capa do álbum
+    function formatTime(secs) { if (isNaN(secs) || !isFinite(secs)) return "0:00"; const m = Math.floor(secs / 60); const s = Math.floor(secs % 60); return `${m}:${s.toString().padStart(2, '0')}`; }
+    function togglePlayPause() { if (!playerReady) return; const state = ytPlayer.getPlayerState(); if (state === YT.PlayerState.PLAYING || state === YT.PlayerState.BUFFERING) ytPlayer.pauseVideo(); else ytPlayer.playVideo(); }
     playPauseBtn.addEventListener('click', togglePlayPause);
     capaCard.addEventListener('click', togglePlayPause);
+    document.getElementById('progressBarBg').addEventListener('click', (e) => { if (!ytPlayer || !playerReady) return; const rect = e.currentTarget.getBoundingClientRect(); const x = e.clientX - rect.left; const percent = x / rect.width; const seekTime = percent * duration; ytPlayer.seekTo(seekTime, true); });
+    document.getElementById('nextBtn').addEventListener('click', () => { if (ytPlayer && playerReady) { const current = ytPlayer.getCurrentTime(); ytPlayer.seekTo(Math.min(current + 10, duration), true); } });
+    document.getElementById('prevBtn').addEventListener('click', () => { if (ytPlayer && playerReady) { const current = ytPlayer.getCurrentTime(); ytPlayer.seekTo(Math.max(current - 10, 0), true); } });
 
-    // Barra de progresso clicável
-    document.getElementById('progressBarBg').addEventListener('click', (e) => {
-      if (!ytPlayer || !playerReady) return;
-      const rect = e.currentTarget.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const percent = x / rect.width;
-      const seekTime = percent * duration;
-      ytPlayer.seekTo(seekTime, true);
-    });
-
-    // Botões next/prev (avançar/voltar 10 segundos)
-    document.getElementById('nextBtn').addEventListener('click', () => {
-      if (ytPlayer && playerReady) {
-        const current = ytPlayer.getCurrentTime();
-        ytPlayer.seekTo(Math.min(current + 10, duration), true);
-      }
-    });
-    document.getElementById('prevBtn').addEventListener('click', () => {
-      if (ytPlayer && playerReady) {
-        const current = ytPlayer.getCurrentTime();
-        ytPlayer.seekTo(Math.max(current - 10, 0), true);
-      }
-    });
-
-    // ----- CONTADOR DE TEMPO JUNTOS -----
+    // Contador
     function updateTimeTogether() {
-      const start = new Date(2022, 10, 13, 0, 0, 0);
-      const now = new Date();
-      let years = now.getFullYear() - start.getFullYear();
-      let months = now.getMonth() - start.getMonth();
-      let days = now.getDate() - start.getDate();
-      let hours = now.getHours() - start.getHours();
-      let minutes = now.getMinutes() - start.getMinutes();
-      let seconds = now.getSeconds() - start.getSeconds();
-      if (seconds < 0) { seconds += 60; minutes--; }
-      if (minutes < 0) { minutes += 60; hours--; }
-      if (hours < 0) { hours += 24; days--; }
-      if (days < 0) { let prevMonthDate = new Date(now.getFullYear(), now.getMonth(), 0); days += prevMonthDate.getDate(); months--; }
-      if (months < 0) { months += 12; years--; }
-      document.getElementById('yearsCount').innerText = years;
-      document.getElementById('monthsCount').innerText = months;
-      document.getElementById('daysCount').innerText = days;
-      document.getElementById('hoursCount').innerText = hours;
-      document.getElementById('minutesCount').innerText = minutes;
-      document.getElementById('secondsCount').innerText = seconds;
+      const start = new Date(2022, 10, 13, 0, 0, 0); const now = new Date();
+      let years = now.getFullYear() - start.getFullYear(), months = now.getMonth() - start.getMonth(), days = now.getDate() - start.getDate(), hours = now.getHours() - start.getHours(), minutes = now.getMinutes() - start.getMinutes(), seconds = now.getSeconds() - start.getSeconds();
+      if (seconds < 0) { seconds += 60; minutes--; } if (minutes < 0) { minutes += 60; hours--; } if (hours < 0) { hours += 24; days--; } if (days < 0) { let prevMonthDate = new Date(now.getFullYear(), now.getMonth(), 0); days += prevMonthDate.getDate(); months--; } if (months < 0) { months += 12; years--; }
+      document.getElementById('yearsCount').innerText = years; document.getElementById('monthsCount').innerText = months; document.getElementById('daysCount').innerText = days; document.getElementById('hoursCount').innerText = hours; document.getElementById('minutesCount').innerText = minutes; document.getElementById('secondsCount').innerText = seconds;
     }
-    updateTimeTogether();
-    setInterval(updateTimeTogether, 1000);
+    updateTimeTogether(); setInterval(updateTimeTogether, 1000);
 
-    // ----- MODAL MENSAGEM -----
+    // Modal mensagem
     const modalMsg = document.getElementById('fullMessageModal');
     document.getElementById('showFullMsgBtn').addEventListener('click', () => { modalMsg.classList.add('open'); document.body.style.overflow = 'hidden'; });
     document.getElementById('closeModalBtn').addEventListener('click', () => { modalMsg.classList.remove('open'); document.body.style.overflow = ''; });
     modalMsg.addEventListener('click', (e) => { if (e.target === modalMsg) modalMsg.classList.remove('open'); });
 
-    // ----- TIMELINE -----
+    // TIMELINE CENTRALIZADA COM CONEXÃO
     const timelineEvents = [
-      { year: 2022, month: "Novembro", day: 13, title: "💖 O início de tudo", desc: "Primeiro encontro e a conexão impossível de ignorar.", img: "https://images.unsplash.com/photo-1516589091380-5d8e87df6991?w=400&h=400&fit=crop", side: "left" },
-      { year: 2023, month: "Fevereiro", day: 14, title: "❤️ Primeiro Dia dos Namorados", desc: "Presentes, risadas e a certeza de que era pra sempre.", img: "https://images.unsplash.com/photo-1518199266791-5375a83190f1?w=400&h=400&fit=crop", side: "right" },
-      { year: 2023, month: "Julho", day: 10, title: "🌊 Viagem inesquecível", desc: "Praia, pôr do sol e promessas.", img: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400&h=400&fit=crop", side: "left" },
-      { year: 2024, month: "Janeiro", day: 1, title: "✨ Réveillon juntos", desc: "Viramos o ano celebrando o amor.", img: "https://images.unsplash.com/photo-1467810563316-b5476525c0f3?w=400&h=400&fit=crop", side: "right" },
-      { year: 2024, month: "Maio", day: 20, title: "🏡 Primeiro lar", desc: "Nosso primeiro apartamento.", img: "https://images.unsplash.com/photo-1560185009-a6a5eb09c24e?w=400&h=400&fit=crop", side: "left" },
-      { year: 2024, month: "Dezembro", day: 25, title: "🎄 Natal em família", desc: "União e sorrisos genuínos.", img: "https://images.unsplash.com/photo-1482517967863-00e15c9b44be?w=400&h=400&fit=crop", side: "right" },
-      { year: 2025, month: "Março", day: 10, title: "💍 Pedido de casamento", desc: "O momento mais especial.", img: "https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=400&h=400&fit=crop", side: "left" },
-      { year: 2026, month: "Junho", day: 12, title: "🥂 Hoje: nosso amor segue forte", desc: "Dia dos Namorados – celebrando cada segundo.", img: "https://media.lovepanda.com.br/temp/d5679e4d-f8e9-41fc-9021-963a9dd18e20-img-20251213-wa0004.jpg", side: "right" }
+      { year: 2023, month: "Maio", day: 13, title: "Quase no começo de tudo", desc: "Foto na escola, 6 meses de namoro", img: "nossa-foto-3.jpg", side: "left" },
+      { year: 2023, month: "Maio", day: 13, title: "Indo conversar sobre o namoro", desc: "Primeira vez que fui na sua casa", img: "nossa-foto-7.jpg", side: "right" },
+      { year: 2023, month: "Maio", day: 24, title: "Açai depois da escola", desc: "Saindo para tomar um açai", img: "nossa-foto-5.jpg", side: "left" },
+      { year: 2023, month: "Maio", day: 28, title: "Domingo juntos", desc: "Nossos domingos juntos no começo", img: "nossa-foto-4.jpg", side: "right" },
+      { year: 2023, month: "Setembro", day: 24, title: "Uma das primeiras RDM", desc: "Uma das primeiras reunião da mocidade juntos em Severinia", img: "nossa-foto-8.jpg", side: "left" },
+      { year: 2023, month: "Novembro", day: 22, title: "1 ano de namoro", desc: "Comemorando 1 ano de namoro", img: "nossa-foto-9.jpg", side: "right" },
+      { year: 2023, month: "Dezembro", day: 25, title: "Nosso primeiro natal", desc: "Primeiro natal que passamos juntos", img: "nossa-foto-6.jpg", side: "left" },
+      { year: 2024, month: "Janeiro", day: 21, title: "Primeira ida ao shopping", desc: "Primeira vez que fomos ao shopping juntos", img: "nossa-foto-10.jpg", side: "right" },
+      { year: 2024, month: "Julho", day: 14, title: "Lotação Juntos", desc: "Primeira vez que fomos em uma lotação juntos", img: "nossa-foto-11.jpg", side: "left" },
+      { year: 2024, month: "Dezembro", day: 25, title: "Nosso segundo natal", desc: "Nosso segundo natal juntos", img: "nossa-foto-12.jpg", side: "right" },
+      { year: 2025, month: "Dezembro", day: 13, title: "Nós", desc: "Eu + Você", img: "nossa-foto-15.jpg", side: "left" },
+      { year: 2025, month: "Março", day: 10, title: "Pedido de casamento", desc: "O momento mais especial.", img: "nossa-foto-13.jpg", side: "right" },
+      { year: 2026, month: "Junho", day: 12, title: "Hoje: nosso amor segue forte", desc: "Dia dos Namorados – celebrando cada segundo.", img: "https://placehold.co/400x400/332f2f/white?text=📸", side: "left" }
     ];
 
     function buildTimeline() {
       const container = document.getElementById('timelineContainer');
       container.innerHTML = '';
-      timelineEvents.forEach((ev) => {
+      timelineEvents.forEach((ev, index) => {
         const itemDiv = document.createElement('div');
         itemDiv.className = `timeline-item ${ev.side}`;
         const dateStr = `${ev.day} de ${ev.month} · ${ev.year}`;
+        // Cria os cards com marcador visual (bolinha) individual posicionada no centro
         itemDiv.innerHTML = `
-          <div class="timeline-icon"><div class="timeline-dot"></div><div class="timeline-line"></div></div>
-          <div class="timeline-content"><img class="timeline-img" src="${ev.img}" onerror="this.src='https://placehold.co/400x400/332f2f/white?text=📸'"><div class="timeline-text"><h3>${ev.title}</h3><div class="timeline-date">${dateStr}</div><p>${ev.desc}</p></div></div>
+          <div class="timeline-content">
+            <img class="timeline-img" src="${ev.img}" onerror="this.src='https://placehold.co/400x400/332f2f/white?text=📸'">
+            <div class="timeline-text">
+              <h3>${ev.title}</h3>
+              <div class="timeline-date">${dateStr}</div>
+              <p>${ev.desc}</p>
+            </div>
+          </div>
         `;
         container.appendChild(itemDiv);
       });
